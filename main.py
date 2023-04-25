@@ -1,10 +1,7 @@
-from typing import Dict
-
-import requests
 from flask import Flask, render_template, request, send_from_directory
 
 from location import Location, Host
-from server import Server
+from replication import Replication
 from upload import FileUpload
 
 app = Flask(__name__)
@@ -29,19 +26,17 @@ def send_link_to_vps():
 
     # Завантажуємо на VPS, найближчу до файлу
     closest_vps = Location(servers, location_file).get_closest_server()
-    initial_upload_result = Server(
+    initial_upload_result = Replication(
         closest_vps,
         file_link
-    ).get_details_of_closest_vps()
+    ).upload_to_closest_vps()
 
     # Завантажуємо на інші VPS, використовуючи нове посилання
     initial_upload_link = initial_upload_result['response']['download_url']
-    details_of_rest_vps = Server(
+    replication_order, replication_responses = Replication(
         closest_vps, initial_upload_link
-    ).get_details_of_rest_vps(servers)
+    ).upload_to_other_servers(servers)
 
-    replication_order = details_of_rest_vps[0]
-    replication_responses = details_of_rest_vps[1]
     server_details_2 = replication_responses[replication_order[0]]
     server_details_3 = replication_responses[replication_order[1]]
 
@@ -82,7 +77,6 @@ def get_link_to_file():
 
 @app.route('/download_info/<filename>', methods=['GET'])
 def get_closest_vps_download_info(filename):
-
     user_ip_address = request.remote_addr
     location_user = Host(ip_address=user_ip_address).get_object_location()
     closest_vps_to_user = Location(servers, location_user).get_closest_server()
