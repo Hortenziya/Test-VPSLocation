@@ -16,13 +16,20 @@ class Replication:
         download_to_server = []
         response_per_server = {}
 
+        tasks = []
         for server in servers:
             if server != self.closest_vps:
                 download_to_server.append(server['name'])
-                response = await self.upload_to_vps(server)
-                response_per_server[server['name']] = self.create_dict(
-                    server, response
-                )
+                task = asyncio.create_task(self.upload_to_vps(server))
+                tasks.append(task)
+
+        responses = await asyncio.gather(*tasks)
+        for response in responses:
+            for server in servers:
+                if server['ip'] in response['download_url']:
+                    response_per_server[server['name']] = self.create_dict(
+                        server, response
+                    )
 
         return [download_to_server, response_per_server]
 
@@ -31,7 +38,7 @@ class Replication:
             response = await client.post(
                 vps_url['url'] + '/upload',
                 json={'link': self.file_link, 'url': vps_url['url']},
-                timeout=300
+                timeout=720
             )
             return response.json()
 

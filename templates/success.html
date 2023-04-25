@@ -73,7 +73,7 @@ function downloadFile(fileUrl, callback) {
     const downloadTime = (endTime - startTime) / 1000;
 
     // Повертаємо тривалість
-    callback(downloadTime.toFixed(2))
+    callback(downloadTime.toFixed(0))
   });
 }
 </script>
