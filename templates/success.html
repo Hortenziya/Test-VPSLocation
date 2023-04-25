@@ -1,16 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
-        <p>File uploaded with success</p>
-        <p>Part1:</p>
-        <p>{{vps_name_1}}, {{vps_city_1}}, {{vps_ip_1}}, {{upload_duration_1}} sec, {{upload_time_1}}, {{url_for_download_1}}</p>
+<p>File uploaded with success</p>
+<p>Part1:</p>
+<p>{{vps_name_1}}, {{vps_city_1}}, {{vps_ip_1}}, {{upload_duration_1}} sec, {{upload_time_1}},
+    {{url_for_download_1}}</p>
 
-        <p>Part2: </p>
-        <p>{{vps_name_1}} -> {{vps_name_2}}, {{vps_city_2}}, {{vps_ip_2}}, {{upload_duration_2}} sec, {{upload_time_2}}, {{url_for_download_2}}</p>
-        <p>{{vps_name_1}} -> {{vps_name_3}}, {{vps_city_3}}, {{vps_ip_3}}, {{upload_duration_3}} sec, {{upload_time_3}}, {{url_for_download_3}}</p>
+<p>Part2: </p>
+<p>{{vps_name_1}} -> {{vps_name_2}}, {{vps_city_2}}, {{vps_ip_2}}, {{upload_duration_2}} sec, {{upload_time_2}},
+    {{url_for_download_2}}</p>
+<p>{{vps_name_1}} -> {{vps_name_3}}, {{vps_city_3}}, {{vps_ip_3}}, {{upload_duration_3}} sec, {{upload_time_3}},
+    {{url_for_download_3}}</p>
 
-        <button><a href="{{ url_for_user_download }}">Download file</a></button>
+<button onclick="downloadWithBenchmark('{{ file_name }}')">Download file</button>
+<p id="downloadTime"></p>
 
+<script language="JavaScript">
+
+function downloadWithBenchmark(fileName){
+    getDownloadInfo("/download_info/" + fileName, (info) => {
+        downloadFile(info['download_url'], (duration) => {
+            console.log("download info", duration)
+            const now = new Date();
+            const year = now.getUTCFullYear();
+            const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(now.getUTCDate()).padStart(2, '0');
+            const hours = String(now.getUTCHours()).padStart(2, '0');
+            const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+            const milliseconds = String(now.getUTCMilliseconds()).padStart(3, '0');
+
+            const utcTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            downloadResultMessage = `${info['vps_name']}, ${info['vps_city']}, ${info['vps_ip']}`
+            downloadResultMessage += `, ${duration} sec, ${utcTime}`
+
+            document.getElementById("downloadTime").innerHTML = downloadResultMessage
+        })
+    })
+}
+
+function getDownloadInfo(url, callback) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", url);
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      const response = JSON.parse(xhr.responseText);
+      console.log("download info", response)
+      callback(response);
+    }
+  };
+  xhr.send();
+}
+
+function downloadFile(fileUrl, callback) {
+  console.log("downloading", fileUrl)
+  const startTime = performance.now();
+  const fileName = fileUrl.substr(fileUrl.lastIndexOf('/') + 1)
+  fetch(fileUrl)
+  .then(response => response.blob())
+  .then(blob => {
+    // Зберігаємо у Викачане
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    // Фіксуємо час
+    const endTime = performance.now();
+    const downloadTime = (endTime - startTime) / 1000;
+
+    // Повертаємо тривалість
+    callback(downloadTime.toFixed(2))
+  });
+}
+</script>
 </body>
 </html>
 

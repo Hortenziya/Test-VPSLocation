@@ -43,14 +43,22 @@ class Host:
 
     def get_ip(self, link):
         self.link = self.link.split('/')[2]
-        hostname = link.split('/')[2]
+        hostname_port = link.split('/')[2]
+        hostname = hostname_port.split(':')[0]
         file_ip_address = socket.gethostbyname(hostname)
         return file_ip_address
 
     def get_object_location(self):
-        response = requests.get(f'https://freegeoip.app/json/{self.ip_address}')
+        return {'city': "Unknown", 'location': (0, 0)}
+
+        response = requests.get(
+            'https://api.ipbase.com/v2/info?'
+            f'ip={self.ip_address}'
+            f'&apiKey={"In4qhCO3c1qh7eOUMk53cQuB9EStKkCyWyiiHGvZ"}'
+        )
+        response.raise_for_status()
         location = response.json()
-        city = location['city']
-        latitude = location['latitude']
-        longitude = location['longitude']
+        city = location['data']['city']['name']
+        latitude = location['data']['latitude']
+        longitude = location['data']['longitude']
         return {'city': city, 'location': (latitude, longitude)}
