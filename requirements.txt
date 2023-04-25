@@ -1,3 +1,5 @@
-flask
+flask[async]
 geopy
 geoip2
+httpx
+requests

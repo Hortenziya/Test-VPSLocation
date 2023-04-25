@@ -36,20 +36,20 @@ def index():
 
 
 @app.route('/', methods=['POST'])
-def send_link_to_vps():
+async def send_link_to_vps():
     file_link = request.form['url']
     location_file = Host(link=file_link).get_object_location()
 
     # Завантажуємо на VPS, найближчу до файлу
     closest_vps = Location(servers, location_file).get_closest_server()
-    initial_upload_result = Replication(
+    initial_upload_result = await Replication(
         closest_vps,
         file_link
     ).upload_to_closest_vps()
 
     # Завантажуємо на інші VPS, використовуючи нове посилання
     initial_upload_link = initial_upload_result['response']['download_url']
-    replication_order, replication_responses = Replication(
+    replication_order, replication_responses = await Replication(
         closest_vps, initial_upload_link
     ).upload_to_other_servers(servers)
 
