@@ -1,8 +1,9 @@
 import socket
 
 import requests as requests
+from geoip2.errors import AddressNotFoundError
 from geopy.distance import great_circle
-
+import geoip2.database
 
 class Location:
     locations: dict
@@ -49,16 +50,12 @@ class Host:
         return file_ip_address
 
     def get_object_location(self):
-        return {'city': "Unknown", 'location': (0, 0)}
-
-        response = requests.get(
-            'https://api.ipbase.com/v2/info?'
-            f'ip={self.ip_address}'
-            f'&apiKey={"In4qhCO3c1qh7eOUMk53cQuB9EStKkCyWyiiHGvZ"}'
-        )
-        response.raise_for_status()
-        location = response.json()
-        city = location['data']['city']['name']
-        latitude = location['data']['latitude']
-        longitude = location['data']['longitude']
-        return {'city': city, 'location': (latitude, longitude)}
+        try:
+            with geoip2.database.Reader('GeoLite2-City/GeoLite2-City.mmdb') as reader:
+                location = reader.city(self.ip_address)
+                city = location.city.name
+                latitude = location.location.latitude
+                longitude = location.location.longitude
+                return {'city': city, 'location': (latitude, longitude)}
+        except AddressNotFoundError:
+            return {'city': "Unknown", 'location': (0, 0)}
