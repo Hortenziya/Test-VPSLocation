@@ -6,11 +6,27 @@ from upload import FileUpload
 
 app = Flask(__name__)
 
-
 servers = [
-    {'name': 'VPS1', 'city': 'Kolomyia', 'ip': 'need_to_get_this_info', 'location': (48.536776, 25.035782),'url': 'http://localhost:5001'},
-    {'name': 'VPS2', 'city': 'Marsberg', 'ip': 'need_to_get_this_info', 'location': (51.444005, 8.799854), 'url': 'http://localhost:5001'},
-    {'name': 'VPS3', 'city': 'Krakiv', 'ip': 'need_to_get_this_info', 'location': (50.047576, 20.064889), 'url': 'http://localhost:5001'},
+    {
+        'name': 'VPS1',
+        'city': 'Kolomyia',
+        'ip': 'need_to_get_this_info',
+        'location': (48.536776, 25.035782),
+        'url': 'http://localhost:5001'
+    },
+    {
+        'name': 'VPS2', 'city': 'Marsberg',
+        'ip': 'need_to_get_this_info',
+        'location': (51.444005, 8.799854),
+        'url': 'http://localhost:5001'
+    },
+    {
+        'name': 'VPS3',
+        'city': 'Krakiv',
+        'ip': 'need_to_get_this_info',
+        'location': (50.047576, 20.064889),
+        'url': 'http://localhost:5001'
+    },
 ]
 
 
@@ -96,7 +112,7 @@ def get_closest_vps_download_info(filename):
 @app.route('/<filename>')
 def uploaded_file(filename):
     return send_from_directory(
-       'uploads/', filename, download_name=filename
+        'uploads/', filename, download_name=filename
     )
 
 
