@@ -9,23 +9,24 @@ app = Flask(__name__)
 servers = [
     {
         'name': 'VPS1',
-        'city': 'Kolomyia',
-        'ip': 'need_to_get_this_info',
-        'location': (48.536776, 25.035782),
-        'url': 'http://localhost:5001'
+        'city': 'Frankfurt',
+        'ip': '104.238.177.11',
+        'location': (50.110258, 8.682471),
+        'url': 'http://104.238.177.11:5001'
     },
     {
-        'name': 'VPS2', 'city': 'Marsberg',
-        'ip': 'need_to_get_this_info',
-        'location': (51.444005, 8.799854),
-        'url': 'http://localhost:5001'
+        'name': 'VPS2',
+        'city': 'Chicago',
+        'ip': '45.76.26.184',
+        'location': (41.877054, -87.629422),
+        'url': 'http://45.76.26.184:5001'
     },
     {
         'name': 'VPS3',
-        'city': 'Krakiv',
-        'ip': 'need_to_get_this_info',
-        'location': (50.047576, 20.064889),
-        'url': 'http://localhost:5001'
+        'city': 'Tokio',
+        'ip': '66.42.39.220',
+        'location': (35.676746, 139.772580),
+        'url': 'http://66.42.39.220:5001'
     },
 ]
 
