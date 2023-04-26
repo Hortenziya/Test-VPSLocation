@@ -3,8 +3,10 @@ from flask import Flask, render_template, request, send_from_directory
 from location import Location, Host
 from replication import Replication
 from upload import FileUpload
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 servers = [
     {

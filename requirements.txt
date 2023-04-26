@@ -1,4 +1,5 @@
 flask[async]
+flask-cors
 geopy
 geoip2
 httpx
