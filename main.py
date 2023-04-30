@@ -5,6 +5,7 @@ from replication import Replication
 from upload import FileUpload
 from flask_cors import CORS
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -32,7 +33,6 @@ servers = [
     },
 ]
 
-
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
@@ -56,33 +56,12 @@ async def send_link_to_vps():
         closest_vps, initial_upload_link
     ).upload_to_other_servers(servers)
 
-    server_details_2 = replication_responses[replication_order[0]]
-    server_details_3 = replication_responses[replication_order[1]]
-
     return render_template(
         'success.html',
-        vps_name_1=closest_vps['name'],
-        vps_city_1=closest_vps['city'],
-        vps_ip_1=closest_vps['ip'],
-        upload_duration_1=initial_upload_result['response']['upload_duration'],
-        upload_time_1=initial_upload_result['response']['upload_time'],
-        url_for_download_1=initial_upload_result['response']['download_url'],
-
-        vps_name_2=server_details_2['name'],
-        vps_city_2=server_details_2['city'],
-        vps_ip_2=server_details_2['ip'],
-        upload_duration_2=server_details_2['response']['upload_duration'],
-        upload_time_2=server_details_2['response']['upload_time'],
-        url_for_download_2=server_details_2['response']['download_url'],
-
-        vps_name_3=server_details_3['name'],
-        vps_city_3=server_details_3['city'],
-        vps_ip_3=server_details_3['ip'],
-        upload_duration_3=server_details_3['response']['upload_duration'],
-        upload_time_3=server_details_3['response']['upload_time'],
-        url_for_download_3=server_details_3['response']['download_url'],
-
-        file_name=file_link.split('/')[-1]
+        initial=initial_upload_result,
+        replication_order=replication_order,
+        replication_responses=replication_responses,
+        file_name=file_link.split('/')[-1],
     )
 
 
@@ -110,7 +89,6 @@ def get_closest_vps_download_info(filename):
         'vps_city': location_vps['city'],
         'download_url': download_url
     }
-
 
 @app.route('/<filename>')
 def uploaded_file(filename):

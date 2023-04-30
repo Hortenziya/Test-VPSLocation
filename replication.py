@@ -1,7 +1,7 @@
-import requests
 
 import httpx
 import asyncio
+
 
 class Replication:
     def __init__(self, closest_vps, file_link):

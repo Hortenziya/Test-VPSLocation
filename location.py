@@ -1,9 +1,9 @@
 import socket
 
-import requests as requests
 from geoip2.errors import AddressNotFoundError
 from geopy.distance import great_circle
 import geoip2.database
+
 
 class Location:
     locations: dict
@@ -26,6 +26,7 @@ class Location:
 
 
 class Host:
+    reader = geoip2.database.Reader('GeoLite2-City/GeoLite2-City.mmdb')
     link: str
     ip_address: str
 
@@ -51,11 +52,10 @@ class Host:
 
     def get_object_location(self):
         try:
-            with geoip2.database.Reader('GeoLite2-City/GeoLite2-City.mmdb') as reader:
-                location = reader.city(self.ip_address)
-                city = location.city.name
-                latitude = location.location.latitude
-                longitude = location.location.longitude
-                return {'city': city, 'location': (latitude, longitude)}
+            location = self.reader.city(self.ip_address)
+            city = location.city.name
+            latitude = location.location.latitude
+            longitude = location.location.longitude
+            return {'city': city, 'location': (latitude, longitude)}
         except AddressNotFoundError:
             return {'city': "Unknown", 'location': (0, 0)}
